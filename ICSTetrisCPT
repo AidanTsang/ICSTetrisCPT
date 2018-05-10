@@ -1,3 +1,31 @@
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.image = pygame.Surface([width, height])
+        self.image.fill((0,0,0))
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+all_sprite_list = pygame.sprite.Group()
+wall_list = pygame.sprite.Group()
+
+wall = Wall(75, 50, 1, 500)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(75, 50, 250, 1)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(325, 50, 1, 500)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(75, 550, 250, 1)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
 import pygame
 pygame.init()
 screen = (600,700)
