@@ -2,6 +2,4 @@ import pygame
 pygame.init()
 screen = (600,700)
 pygame.display.set_mode(screen)
-done = False
-while not done:
-    I forgot the rest
+shapes = [7][4]
