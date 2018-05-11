@@ -1,6 +1,13 @@
 import pygame
 pygame.init()
 
+Black = (0, 0, 0)
+White = (255, 255, 255)
+Green = (0, 255, 0)
+Red = (255, 0, 0)
+class shapes():
+    pygame.draw.rect()
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -37,7 +44,7 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    screen.fill(while)
+    screen.fill(white)
     all_sprite_list.draw(screen)
     pygame.display.flip()
     clock.tick(60)
