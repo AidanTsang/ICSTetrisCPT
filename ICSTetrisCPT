@@ -1,3 +1,6 @@
+import pygame
+pygame.init()
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -26,8 +29,15 @@ wall = Wall(75, 550, 250, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-import pygame
-pygame.init()
 screen = (600,700)
 pygame.display.set_mode(screen)
-shapes = [7][4]
+
+done = False
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+    screen.fill(while)
+    all_sprite_list.draw(screen)
+    pygame.display.flip()
+    clock.tick(60)
