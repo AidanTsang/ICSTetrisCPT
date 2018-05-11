@@ -1,0 +1,92 @@
+import pygame
+
+def shape():
+    pygame.draw.rect(screen, (0, 0, 0), [x - 0, y - 25, 25, 25], 2)
+    pygame.draw.rect(screen, (0, 0, 0), [x, y, 25, 25], 2)
+    pygame.draw.rect(screen, (0, 0, 0), [x + 0, y + 25, 25, 25], 2)
+    pygame.draw.rect(screen, (0, 0, 0), [x + 2 * 0, y + 2 * 25, 25, 25], 2)
+
+    pygame.draw.rect(screen, (0, 0, 0), [x, y, 25, 25 ], 2)
+    pygame.draw.rect(screen, (0, 0, 0), [x - 0, y - 25, 25, 25], 2)
+    pygame.draw.rect(screen, (0, 0, 0), [x - 25, y - 0, 25, 25], 2)
+    pygame.draw.rect(screen, (0, 0, 0), [x + 25, y - 0, 25, 25], 2)
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface(50,25)
+        self.image.fill((255,0,0))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.change_x = 0
+        self.change_y = -1
+        self.walls = None
+
+    def calc_grav(self):
+        if self.change_y == 0:
+            self.change_y = 1
+
+
+        if self.rect.y >= 550 - self.rect.height and self.change_y >= 0:
+            self.change_y = 0
+            self.rect.y = 550 - self.rect.height
+
+
+    def update(self):
+        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
+        for block in block_hit_list:
+            if self.change_y > 0:
+                self.rect.bottom = block.rect.top
+            else:
+                self.rect.top = block.rect.bottom
+
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.image = pygame.Surface([width, height])
+        self.image.fill((0,0,0))
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+all_sprite_list = pygame.sprite.Group()
+wall_list = pygame.sprite.Group()
+
+wall = Wall(75, 50, 1, 500)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(75, 50, 250, 1)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(325, 50, 1, 500)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(75, 550, 250, 1)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+pygame.init()
+size = (500,600)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Tetris_Testing")
+clock = pygame.time.Clock()
+x = 300
+y = 300
+length_x = 0
+length_y = 25
+shape = 0
+
+done = False
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+    screen.fill((255,255,255))
+    all_sprite_list.draw(screen)
+    pygame.display.flip()
+    clock.tick(60)
