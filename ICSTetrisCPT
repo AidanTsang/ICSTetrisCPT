@@ -5,8 +5,6 @@ Black = (0, 0, 0)
 White = (255, 255, 255)
 Green = (0, 255, 0)
 Red = (255, 0, 0)
-class shapes():
-    pygame.draw.rect()
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -36,15 +34,20 @@ wall = Wall(75, 550, 250, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-screen = (600,700)
-pygame.display.set_mode(screen)
+size = (600, 700)
+screen = pygame.display.set_mode(size)
+
+#class shapes():
+ #   pygame.draw.rect(screen, Black, [0, 125, 25, 25], 2)
+
 
 done = False
 while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    screen.fill(white)
+    screen.fill(255,255,255)
     all_sprite_list.draw(screen)
     pygame.display.flip()
+    clock = pygame.time.clock()
     clock.tick(60)
