@@ -46,7 +46,7 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    screen.fill(255,255,255)
+    screen.fill(White)
     all_sprite_list.draw(screen)
     pygame.display.flip()
     clock = pygame.time.clock()
