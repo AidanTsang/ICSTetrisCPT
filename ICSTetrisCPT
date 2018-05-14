@@ -54,8 +54,8 @@ while not done:
     all_sprite_list.draw(screen)
     for i in range(50, 550, 25):
         for k in range(75, 325, 25):
-            pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 2)
-
+            pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
+    pygame.draw.rect(screen, Black, [75,50,250,500], 2)
 
     pygame.display.flip()
 
