@@ -30,15 +30,19 @@ wall = Wall(325, 50, 1, 500)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(75, 550, 250, 1)
+wall = Wall(75, 550, 250, 1)#75 50, 325 550
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-size = (600, 700)
+size = (500, 600)
 screen = pygame.display.set_mode(size)
 
 #class shapes():
  #   pygame.draw.rect(screen, Black, [0, 125, 25, 25], 2)
+def shapes():
+    lShape = [4]
+    lShape[0] = pygame.draw.rect(screen, Red, [250, 50, 25, 25], 2)
+    pygame.display.flip()
 
 
 done = False
@@ -48,6 +52,12 @@ while not done:
             done = True
     screen.fill(White)
     all_sprite_list.draw(screen)
+    for i in range(50, 550, 25):
+        for k in range(75, 325, 25):
+            pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 2)
+
+
     pygame.display.flip()
+
     clock = pygame.time.Clock()
-    clock.tick(60)
+    clock.tick(10)
