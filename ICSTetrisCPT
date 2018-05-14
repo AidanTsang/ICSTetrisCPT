@@ -49,5 +49,5 @@ while not done:
     screen.fill(White)
     all_sprite_list.draw(screen)
     pygame.display.flip()
-    clock = pygame.time.clock()
+    clock = pygame.time.Clock()
     clock.tick(60)
