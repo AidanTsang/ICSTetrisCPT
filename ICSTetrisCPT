@@ -1,5 +1,5 @@
 import pygame
-pygame.init()
+
 
 Black = (0, 0, 0)
 White = (255, 255, 255)
@@ -44,7 +44,7 @@ def shapes():
     lShape[0] = pygame.draw.rect(screen, Red, [250, 50, 25, 25], 2)
     pygame.display.flip()
 
-
+pygame.init()
 done = False
 while not done:
     for event in pygame.event.get():
