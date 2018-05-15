@@ -1,0 +1,118 @@
+import pygame
+pygame.init()
+
+Black = (0, 0, 0)
+White = (255, 255, 255)
+Green = (0, 255, 0)
+Red = (255, 0, 0)
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, color, width, height):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([width, height])
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.walls = None
+        self.change_x = 0
+        self.change_y = 0
+
+    def update(self):
+        self.fall()
+        self.rect.x += self.change_x
+        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
+        for block in block_hit_list:
+            if self.change_x > 0:
+                self.rect.right = block.rect.left
+            else:
+                self.rect.left = block.rect.right
+        self.rect.y += self.change_y
+        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
+        for block in block_hit_list:
+            if self.change_y > 0:
+                self.rect.bottom = block.rect.top
+            else:
+                self.rect.top = block.rect.bottom
+
+    def fall(self):
+        if self.change_y == 0:
+            self.change_y = 25
+        if self.rect.y >= 550 - self.rect.height and self.change_y >= 0:
+            self.change_y = 0
+            self.rect.y = 550 - self.rect.height
+
+    def left(self):
+        self.change_x = -25
+
+    def right(self):
+        self.change_x = 25
+
+
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.image = pygame.Surface([width, height])
+        self.image.fill((0,0,0))
+        self.rect = self.image.get_rect()
+        self.rect.y = y
+        self.rect.x = x
+
+all_sprite_list = pygame.sprite.Group()
+wall_list = pygame.sprite.Group()
+
+wall = Wall(74, 49, 1, 502)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(74, 49, 252, 1)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(324, 49, 1, 502)
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+wall = Wall(74, 549, 252, 1)#75 50, 325 550
+wall_list.add(wall)
+all_sprite_list.add(wall)
+
+size = (500, 600)
+screen = pygame.display.set_mode(size)
+
+#class shapes():
+ #   pygame.draw.rect(screen, Black, [0, 125, 25, 25], 2)
+def shapes():
+    lShape = [4]
+    lShape[0] = pygame.draw.rect(screen, Red, [250, 50, 25, 25], 2)
+    pygame.display.flip()
+def main():
+    player = Player(Red, 25, 25)
+    player.walls = wall_list
+    active_sprite_list = pygame.sprite.Group()
+    player.rect.x = 200
+    player.rect.y = 50
+    active_sprite_list.add(player)
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+        screen.fill(White)
+        all_sprite_list.draw(screen)
+        for i in range(50, 550, 25):
+            for k in range(75, 325, 25):
+                pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    player.left()
+                elif event.key == pygame.K_RIGHT:
+                    player.right()
+        pygame.draw.rect(screen, Black, [74,49,252,502], 2)
+        player.update()
+        active_sprite_list.draw(screen)
+        pygame.display.flip()
+        clock = pygame.time.Clock()
+        clock.tick(5)
+
+if __name__ == "__main__":
+    main()
