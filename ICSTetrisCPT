@@ -1,10 +1,11 @@
 import pygame
 
-
 Black = (0, 0, 0)
 White = (255, 255, 255)
 Green = (0, 255, 0)
 Red = (255, 0, 0)
+Yellow = (255, 255, 0)
+
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -40,9 +41,15 @@ screen = pygame.display.set_mode(size)
 #class shapes():
  #   pygame.draw.rect(screen, Black, [0, 125, 25, 25], 2)
 def shapes():
-    lShape = [4]
-    lShape[0] = pygame.draw.rect(screen, Red, [250, 50, 25, 25], 2)
-    pygame.display.flip()
+    SquareShape = [4]
+    SquareShape[0] = pygame.draw.rect(screen, Yellow, [200, 50, 25, 25], 2)
+    SquareShape[1] = pygame.draw.rect(screen, Yellow, [200, 75, 25, 25], 2)
+    SquareShape[2] = pygame.draw.rect(screen, Yellow, [175, 50, 25, 25], 2)
+    SquareShape[3] = pygame.draw.rect(screen, Yellow, [175, 75, 25, 25], 2)
+
+    IShape = [4]
+
+    shapes = [SquareShape, IShape]
 
 pygame.init()
 done = False
@@ -56,7 +63,9 @@ while not done:
         for k in range(75, 325, 25):
             pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
     pygame.draw.rect(screen, Black, [75,50,250,500], 2)
+    pygame.display.flip()
 
+    pygame.draw.rect(screen, (0,255,255), [200, 50, 25, 25], 2)
     pygame.display.flip()
 
     clock = pygame.time.Clock()
