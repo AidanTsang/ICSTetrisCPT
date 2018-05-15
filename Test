@@ -7,17 +7,16 @@ Green = (0, 255, 0)
 Red = (255, 0, 0)
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, color, width, height):
+    def __init__(self, colour, width, height):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])
-        self.image.fill(color)
+        self.image.fill(colour)
         self.rect = self.image.get_rect()
         self.walls = None
         self.change_x = 0
         self.change_y = 0
 
     def update(self):
-        self.fall()
         self.rect.x += self.change_x
         block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
         for block in block_hit_list:
@@ -33,18 +32,17 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.top = block.rect.bottom
 
-    def fall(self):
-        if self.change_y == 0:
-            self.change_y = 25
-        if self.rect.y >= 550 - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = 550 - self.rect.height
-
-    def left(self):
+    def go_left(self):
         self.change_x = -25
 
-    def right(self):
+    def go_right(self):
         self.change_x = 25
+
+    def go_down(self):
+        self.change_y = 25
+
+    def stop(self):
+        self.change_x = 0
 
 
 class Wall(pygame.sprite.Sprite):
@@ -85,7 +83,8 @@ def shapes():
     lShape[0] = pygame.draw.rect(screen, Red, [250, 50, 25, 25], 2)
     pygame.display.flip()
 def main():
-    player = Player(Red, 25, 25)
+    timer = 0
+    player = Player(Red, 50, 25)
     player.walls = wall_list
     active_sprite_list = pygame.sprite.Group()
     player.rect.x = 200
@@ -93,26 +92,35 @@ def main():
     active_sprite_list.add(player)
     done = False
     while not done:
+        if timer == 10:
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    player.go_left()
+                if event.key == pygame.K_RIGHT:
+                    player.go_right()
+                if event.key == pygame.K_DOWN:
+                    player.go_down()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    player.stop()
         screen.fill(White)
         all_sprite_list.draw(screen)
         for i in range(50, 550, 25):
             for k in range(75, 325, 25):
                 pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.left()
-                elif event.key == pygame.K_RIGHT:
-                    player.right()
         pygame.draw.rect(screen, Black, [74,49,252,502], 2)
+        if player.rect.x == 525:
+            player.stop()
         player.update()
         active_sprite_list.draw(screen)
         pygame.display.flip()
         clock = pygame.time.Clock()
-        clock.tick(5)
+        clock.tick(10)
+        timer += 1
 
 if __name__ == "__main__":
     main()
