@@ -4,8 +4,11 @@ Black = (0, 0, 0)
 White = (255, 255, 255)
 Green = (0, 255, 0)
 Red = (255, 0, 0)
+Blue = (0, 0, 255)
+LightBlue = (0,255,255)
+Purple = (128,0,128)
 Yellow = (255, 255, 0)
-
+Orange = (255,165,0)
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -48,8 +51,42 @@ def shapes():
     SquareShape[3] = pygame.draw.rect(screen, Yellow, [175, 75, 25, 25], 2)
 
     IShape = [4]
+    IShape[0] = pygame.draw.rect(screen, LightBlue, [150, 50, 25, 25], 2)
+    IShape[1] = pygame.draw.rect(screen, LightBlue, [175, 50, 25, 25], 2)
+    IShape[2] = pygame.draw.rect(screen, LightBlue, [200, 50, 25, 25], 2)
+    IShape[3] = pygame.draw.rect(screen, LightBlue, [225, 50, 25, 25], 2)
 
-    shapes = [SquareShape, IShape]
+    LShape = [4]
+    LShape[0] = pygame.draw.rect(screen, Blue, [150, 50, 25, 25], 2)
+    LShape[1] = pygame.draw.rect(screen, Blue, [175, 50, 25, 25], 2)
+    LShape[2] = pygame.draw.rect(screen, Blue, [200, 50, 25, 25], 2)
+    LShape[3] = pygame.draw.rect(screen, Blue, [200, 75, 25, 25], 2)
+
+    RevLShape = [4]
+    RevLShape[0] = pygame.draw.rect(screen, Orange, [150, 75, 25, 25], 2)
+    RevLShape[1] = pygame.draw.rect(screen, Orange, [150, 50, 25, 25], 2)
+    RevLShape[2] = pygame.draw.rect(screen, Orange, [175, 50, 25, 25], 2)
+    RevLShape[3] = pygame.draw.rect(screen, Orange, [200, 50, 25, 25], 2)
+
+    SShape = [4]
+    SShape[0] = pygame.draw.rect(screen, Green, [150, 75, 25, 25], 2)
+    SShape[1] = pygame.draw.rect(screen, Green, [175, 75, 25, 25], 2)
+    SShape[2] = pygame.draw.rect(screen, Green, [175, 50, 25, 25], 2)
+    SShape[3] = pygame.draw.rect(screen, Green, [200, 50, 25, 25], 2)
+
+    RevSShape = [4]
+    RevSShape[0] = pygame.draw.rect(screen, Red, [150, 50, 25, 25], 2)
+    RevSShape[1] = pygame.draw.rect(screen, Red, [175, 50, 25, 25], 2)
+    RevSShape[2] = pygame.draw.rect(screen, Red, [175, 75, 25, 25], 2)
+    RevSShape[3] = pygame.draw.rect(screen, Red, [200, 75, 25, 25], 2)
+
+    TShape = [4]
+    TShape[0] = pygame.draw.rect(screen, Purple, [150, 75, 25, 25], 2)
+    TShape[1] = pygame.draw.rect(screen, Purple, [175, 75, 25, 25], 2)
+    TShape[2] = pygame.draw.rect(screen, Purple, [175, 50, 25, 25], 2)
+    TShape[3] = pygame.draw.rect(screen, Purple, [200, 75, 25, 25], 2)
+
+    shapes = [SquareShape,IShape,SShape,RevSShape,LShape,RevLShape,TShape]
 
 pygame.init()
 done = False
@@ -63,9 +100,6 @@ while not done:
         for k in range(75, 325, 25):
             pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
     pygame.draw.rect(screen, Black, [75,50,250,500], 2)
-    pygame.display.flip()
-
-    pygame.draw.rect(screen, (0,255,255), [200, 50, 25, 25], 2)
     pygame.display.flip()
 
     clock = pygame.time.Clock()
