@@ -1,4 +1,6 @@
-import pygame
+iimport pygame
+pygame.init()
+import random
 
 Black = (0, 0, 0)
 White = (255, 255, 255)
@@ -9,6 +11,47 @@ LightBlue = (0,255,255)
 Purple = (128,0,128)
 Yellow = (255, 255, 0)
 Orange = (255,165,0)
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, colour, width, height):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([width, height])
+        self.image.fill(colour)
+        self.rect = self.image.get_rect()
+        self.walls = None
+        self.change_x = 0
+        self.change_y = 0
+
+    def update(self):
+        self.rect.x += self.change_x
+        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
+        for block in block_hit_list:
+            if self.change_x > 0:
+                self.rect.right = block.rect.left
+            else:
+                self.rect.left = block.rect.right
+        self.rect.y += self.change_y
+        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
+        for block in block_hit_list:
+            if self.change_y > 0:
+                self.rect.bottom = block.rect.top
+            else:
+                self.rect.top = block.rect.bottom
+
+    def go_left(self):
+        self.change_x = -25
+
+    def go_right(self):
+        self.change_x = 25
+
+    def go_down(self):
+        self.change_y = 25
+
+    def stop(self):
+        self.change_x = 0
+
+    def stop_fall(self):
+        self.change_y = 0
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -22,19 +65,19 @@ class Wall(pygame.sprite.Sprite):
 all_sprite_list = pygame.sprite.Group()
 wall_list = pygame.sprite.Group()
 
-wall = Wall(75, 50, 1, 500)
+wall = Wall(74, 49, 1, 502)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(75, 50, 250, 1)
+wall = Wall(74, 49, 252, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(325, 50, 1, 500)
+wall = Wall(324, 49, 1, 502)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(75, 550, 250, 1)#75 50, 325 550
+wall = Wall(74, 549, 252, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
@@ -88,19 +131,51 @@ def shapes():
 
     shapes = [SquareShape,IShape,SShape,RevSShape,LShape,RevLShape,TShape]
 
-pygame.init()
-done = False
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-    screen.fill(White)
-    all_sprite_list.draw(screen)
-    for i in range(50, 550, 25):
-        for k in range(75, 325, 25):
-            pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
-    pygame.draw.rect(screen, Black, [75,50,250,500], 2)
-    pygame.display.flip()
+def main():
+    timer = 0
+    player = Player(Red, 50, 25)
+    player.walls = wall_list
+    active_sprite_list = pygame.sprite.Group()
+    player.rect.x = 100
+    player.rect.y = 50
+    active_sprite_list.add(player)
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+        if timer == 10:
+            player.change_y = 25
+            timer = 0
+        else:
+            player.change_y = 0
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            player.go_left()
+        elif keys[pygame.K_RIGHT]:
+            player.go_right()
+        else:
+            player.stop()
+        if keys[pygame.K_DOWN] or player.change_y != 0:
+            player.go_down()
+        elif keys[pygame.K_UP]:
+            player.change_y = -25
+        else:
+            player.stop_fall()
+        screen.fill(White)
+        all_sprite_list.draw(screen)
+        for i in range(50, 550, 25):
+            for k in range(75, 325, 25):
+                pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
+        pygame.draw.rect(screen, Black, [74,49,252,502], 2)
+        if player.rect.x == 525:
+            player.stop()
+        player.update()
+        active_sprite_list.draw(screen)
+        pygame.display.flip()
+        clock = pygame.time.Clock()
+        clock.tick(20)
+        timer += 1
 
-    clock = pygame.time.Clock()
-    clock.tick(10)
+if __name__ == "__main__":
+    main()
