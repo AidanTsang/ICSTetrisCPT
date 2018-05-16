@@ -9,6 +9,8 @@ Red = (255, 0, 0)
 class Player(pygame.sprite.Sprite):
     def __init__(self, colour, width, height):
         pygame.sprite.Sprite.__init__(self)
+        self.width = width
+        self.height = height
         self.image = pygame.Surface([width, height])
         self.image.fill(colour)
         self.rect = self.image.get_rect()
@@ -59,53 +61,55 @@ class Wall(pygame.sprite.Sprite):
 all_sprite_list = pygame.sprite.Group()
 wall_list = pygame.sprite.Group()
 
-wall = Wall(74, 49, 1, 502)
+wall = Wall(75, 50, 1, 501)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(74, 49, 252, 1)
+wall = Wall(75, 50, 251, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(324, 49, 1, 502)
+wall = Wall(326, 50, 1, 501)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(74, 549, 252, 1)
+wall = Wall(75, 550, 251, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
 size = (500, 600)
 screen = pygame.display.set_mode(size)
 
-#class shapes():
- #   pygame.draw.rect(screen, Black, [0, 125, 25, 25], 2)
-def shapes():
-    lShape = [4]
-    lShape[0] = pygame.draw.rect(screen, Red, [250, 50, 25, 25], 2)
-    pygame.display.flip()
+def rand_shape():
+    shape = rand.randrage(10)
+    if shape == 0:
+        return Player(qihfihf)
+    elif shape == 1:
+        return Player(aknsgiwj)
+
 def main():
     timer = 0
+    block_list = pygame.sprite.Group()
     player = Player(Red, 50, 25)
     player.walls = wall_list
     active_sprite_list = pygame.sprite.Group()
-    player.rect.x = 200
-    player.rect.y = 50
+    player.rect.x = 201
+    player.rect.y = 51
     active_sprite_list.add(player)
     done = False
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-        if timer == 10:
+        if timer == 20:
             player.change_y = 25
             timer = 0
         else:
             player.change_y = 0
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] and player.rect.y <= 500:
             player.go_left()
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_RIGHT] and player.rect.y <= 500:
             player.go_right()
         else:
             player.stop()
@@ -117,14 +121,22 @@ def main():
             player.stop_fall()
         screen.fill(White)
         all_sprite_list.draw(screen)
-        for i in range(50, 550, 25):
-            for k in range(75, 325, 25):
+        for i in range(51, 550, 25):
+            for k in range(76, 325, 25):
                 pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
         pygame.draw.rect(screen, Black, [74,49,252,502], 2)
-        if player.rect.x == 525:
-            player.stop()
         player.update()
         active_sprite_list.draw(screen)
+        if player.rect.y >= 549 - player.height:
+            wall = Wall(player.rect.x, player.rect.y, player.width, player.height)
+            wall_list.add(wall)
+            all_sprite_list.add(wall)
+            block_list.add(wall)
+            player = Player(Green, 50, 50)
+            player.walls = wall_list
+            player.rect.x = 201
+            player.rect.y = 51
+            active_sprite_list.add(player)
         pygame.display.flip()
         clock = pygame.time.Clock()
         clock.tick(20)
