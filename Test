@@ -44,6 +44,8 @@ class Player(pygame.sprite.Sprite):
     def stop(self):
         self.change_x = 0
 
+    def stop_fall(self):
+        self.change_y = 0
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -69,7 +71,7 @@ wall = Wall(324, 49, 1, 502)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(74, 549, 252, 1)#75 50, 325 550
+wall = Wall(74, 549, 252, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
@@ -92,21 +94,27 @@ def main():
     active_sprite_list.add(player)
     done = False
     while not done:
-        if timer == 10:
-            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.go_left()
-                if event.key == pygame.K_RIGHT:
-                    player.go_right()
-                if event.key == pygame.K_DOWN:
-                    player.go_down()
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    player.stop()
+        if timer == 10:
+            player.change_y = 25
+            timer = 0
+        else:
+            player.change_y = 0
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            player.go_left()
+        elif keys[pygame.K_RIGHT]:
+            player.go_right()
+        else:
+            player.stop()
+        if keys[pygame.K_DOWN] or player.change_y != 0:
+            player.go_down()
+        elif keys[pygame.K_UP]:
+            player.change_y = -25
+        else:
+            player.stop_fall()
         screen.fill(White)
         all_sprite_list.draw(screen)
         for i in range(50, 550, 25):
@@ -119,7 +127,7 @@ def main():
         active_sprite_list.draw(screen)
         pygame.display.flip()
         clock = pygame.time.Clock()
-        clock.tick(10)
+        clock.tick(20)
         timer += 1
 
 if __name__ == "__main__":
