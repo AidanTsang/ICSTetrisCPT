@@ -1,4 +1,5 @@
 import pygame
+import random
 pygame.init()
 
 Black = (0, 0, 0)
@@ -6,8 +7,8 @@ White = (255, 255, 255)
 Green = (0, 255, 0)
 Red = (255, 0, 0)
 Blue = (0, 0, 255)
-Purple = (128, 128, 0)
-Orange = (255, 165, 0)
+Purple = (128, 0, 128)
+Orange = (253, 106, 2)
 Yellow = (255, 255, 0)
 
 class Player(pygame.sprite.Sprite):
@@ -78,14 +79,14 @@ wall = Wall(326, 50, 1, 501)
 wall_list.add(wall)
 all_sprite_list.add(wall)
 
-wall = Wall(75, 549, 251, 1)
+wall = Wall(75, 551, 251, 1)
 wall_list.add(wall)
 all_sprite_list.add(wall)
-bottom_walls.add(Wall(75, 500, 251, 1))
+bottom_walls.add(Wall(75, 550, 251, 1))
 
 
 def rand_colour():
-    num = rand.randrage(6)
+    num = random.randrange(6)
     if num == 0:
         return Red
     elif num == 1:
@@ -102,12 +103,14 @@ def rand_colour():
 def main():
     size = (500, 600)
     screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("Test3.0")
+    clock = pygame.time.Clock()
     timer = 0
     block_list = pygame.sprite.Group()
-    player = Player(Red, 50, 25)
+    player = Player(Red, 50, 50)
     player.walls = wall_list
     active_sprite_list = pygame.sprite.Group()
-    player.rect.x = 201
+    player.rect.x = 176
     player.rect.y = 51
     active_sprite_list.add(player)
     done = False
@@ -121,9 +124,9 @@ def main():
         else:
             player.change_y = 0
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player.rect.y <= 500:
+        if keys[pygame.K_LEFT] and player.change_x == 0:
             player.go_left()
-        elif keys[pygame.K_RIGHT] and player.rect.y <= 500:
+        elif keys[pygame.K_RIGHT] and player.change_x == 0:
             player.go_right()
         else:
             player.stop()
@@ -143,19 +146,19 @@ def main():
         active_sprite_list.draw(screen)
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
         for i in bottom_hit_list:
-            if player.change.y > 0:
+            if player.change_y > 0:
                 wall = Wall(player.rect.x, player.rect.y, player.width, player.height)
                 wall_list.add(wall)
                 all_sprite_list.add(wall)
                 block_list.add(wall)
-                bottom_walls.add(Wall(player.rect.x, player.rect.y-1, player.width, player.height)
-                player = Player(rand_colour(), 50, 50)
+                bottom_walls.add(Wall(player.rect.x, player.rect.y - 1, player.width, player.height))
+                colour = rand_colour()
+                player = Player(colour, 50, 50)
                 player.walls = wall_list
-                player.rect.x = 201
+                player.rect.x = 176
                 player.rect.y = 51
                 active_sprite_list.add(player)
         pygame.display.flip()
-        clock = pygame.time.Clock()
         clock.tick(20)
         timer += 1
 
