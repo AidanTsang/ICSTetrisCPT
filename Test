@@ -8,7 +8,7 @@ Green = (0, 255, 0)
 Red = (255, 0, 0)
 Blue = (0, 0, 255)
 Purple = (128, 0, 128)
-Orange = (253, 106, 2)
+Orange = (255, 165, 0)
 Yellow = (255, 255, 0)
 
 class Player(pygame.sprite.Sprite):
