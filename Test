@@ -1,5 +1,6 @@
 import pygame
 import random
+import pygame.gfxdraw
 pygame.init()
 
 Black = (0, 0, 0)
@@ -11,13 +12,37 @@ Purple = (128, 0, 128)
 Orange = (255, 165, 0)
 Yellow = (255, 255, 0)
 
+def rand_shape():
+    num = random.randrange(2)
+    if num == 0:
+        return "Shape_S"
+    elif num == 1:
+        return "Shape_Z"
+    elif num == 2:
+        return Blue
+    elif num == 3:
+        return Purple
+    elif num == 4:
+        return Orange
+    elif num == 5:
+        return Yellow
+
+
+def get_shape(shape):
+    if shape == "Shape_S":
+        Shape_S_width, Shape_S_height = 75, 50
+        Shape_S = pygame.Surface((Shape_S_width,Shape_S_height), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_S, ((0,25),(0,50),(50,50),(50,25),(75,25),(75,0),(25,0),(25,25)),Green)
+        return Shape_S
+    elif shape == "Shape_Z":
+        Shape_Z = pygame.Surface((75,50), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_Z, ((75,25),(75,50),(25,50),(25,25),(0,25),(0,0),(50,0),(50,25)),Red)
+
 class Player(pygame.sprite.Sprite):
-    def __init__(self, colour, width, height):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.width = width
-        self.height = height
-        self.image = pygame.Surface([width, height])
-        self.image.fill(colour)
+        self.shape = get_shape(rand_shape())
+        self.image = self.shape
         self.rect = self.image.get_rect()
         self.walls = None
         self.change_x = 0
@@ -85,20 +110,6 @@ all_sprite_list.add(wall)
 bottom_walls.add(Wall(75, 550, 251, 1))
 
 
-def rand_colour():
-    num = random.randrange(6)
-    if num == 0:
-        return Red
-    elif num == 1:
-        return Green
-    elif num == 2:
-        return Blue
-    elif num == 3:
-        return Purple
-    elif num == 4:
-        return Orange
-    elif num == 5:
-        return Yellow
 
 def main():
     size = (500, 600)
@@ -107,7 +118,7 @@ def main():
     clock = pygame.time.Clock()
     timer = 0
     block_list = pygame.sprite.Group()
-    player = Player(Red, 50, 50)
+    player = Player()
     player.walls = wall_list
     active_sprite_list = pygame.sprite.Group()
     player.rect.x = 176
@@ -132,7 +143,7 @@ def main():
             player.stop()
         if keys[pygame.K_DOWN] or player.change_y != 0:
             player.go_down()
-        elif keys[pygame.K_UP]:
+        elif keys[pygame.K_UP] and False:
             player.change_y = -25
         else:
             player.stop_fall()
@@ -147,13 +158,12 @@ def main():
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
         for i in bottom_hit_list:
             if player.change_y > 0:
-                wall = Wall(player.rect.x, player.rect.y, player.width, player.height)
+                wall = Wall(player.rect.x, player.rect.y, 1, 1)
                 wall_list.add(wall)
                 all_sprite_list.add(wall)
                 block_list.add(wall)
-                bottom_walls.add(Wall(player.rect.x, player.rect.y - 1, player.width, player.height))
-                colour = rand_colour()
-                player = Player(colour, 50, 50)
+                bottom_walls.add(Wall(player.rect.x, player.rect.y - 1, 1, 1))
+                player = Player()
                 player.walls = wall_list
                 player.rect.x = 176
                 player.rect.y = 51
