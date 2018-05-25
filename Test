@@ -2,6 +2,9 @@ import pygame
 import random
 import pygame.gfxdraw
 pygame.init()
+size = (500, 600)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Test3.0")
 
 Black = (0, 0, 0)
 White = (255, 255, 255)
@@ -37,12 +40,13 @@ def get_shape(shape):
     elif shape == "Shape_Z":
         Shape_Z = pygame.Surface((75,50), pygame.SRCALPHA)
         pygame.gfxdraw.filled_polygon(Shape_Z, ((75,25),(75,50),(25,50),(25,25),(0,25),(0,0),(50,0),(50,25)),Red)
+        return Shape_Z
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.shape = get_shape(rand_shape())
-        self.image = self.shape
+        self.shape = rand_shape()
+        self.image = get_shape(self.shape)
         self.rect = self.image.get_rect()
         self.walls = None
         self.change_x = 0
@@ -79,6 +83,11 @@ class Player(pygame.sprite.Sprite):
     def stop_fall(self):
         self.change_y = 0
 
+    def rotate(self):
+        self.image = pygame.transform.rotozoom(self.image, 90, 1)
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -112,11 +121,9 @@ bottom_walls.add(Wall(75, 550, 251, 1))
 
 
 def main():
-    size = (500, 600)
-    screen = pygame.display.set_mode(size)
-    pygame.display.set_caption("Test3.0")
     clock = pygame.time.Clock()
     timer = 0
+    stop_rotate = 0
     block_list = pygame.sprite.Group()
     player = Player()
     player.walls = wall_list
@@ -147,6 +154,12 @@ def main():
             player.change_y = -25
         else:
             player.stop_fall()
+        if keys[pygame.K_UP]:
+            if stop_rotate == 0:
+                player.rotate()
+                stop_rotate += 1
+        else:
+            stop_rotate = 0
         screen.fill(White)
         all_sprite_list.draw(screen)
         for i in range(51, 550, 25):
@@ -158,11 +171,6 @@ def main():
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
         for i in bottom_hit_list:
             if player.change_y > 0:
-                wall = Wall(player.rect.x, player.rect.y, 1, 1)
-                wall_list.add(wall)
-                all_sprite_list.add(wall)
-                block_list.add(wall)
-                bottom_walls.add(Wall(player.rect.x, player.rect.y - 1, 1, 1))
                 player = Player()
                 player.walls = wall_list
                 player.rect.x = 176
