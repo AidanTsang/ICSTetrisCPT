@@ -1,5 +1,6 @@
 import pygame
 import random
+import pygame.gfxdraw
 pygame.init()
 
 Black = (0, 0, 0)
@@ -12,19 +13,44 @@ Purple = (128, 0, 128)
 Orange = (255, 165, 0)
 Yellow = (255, 255, 0)
 
+def rand_shape():
+    num = random.randrange(3)
+    if num == 0:
+        return "Shape_S"
+    elif num == 1:
+        return "Shape_Z"
+    elif num == 2:
+        return "Shape_Square"
+    elif num == 3:
+        return Purple
+    elif num == 4:
+        return Orange
+    elif num == 5:
+        return Yellow
+
+
+def get_shape(shape):
+    if shape == "Shape_Square":
+        Shape_Square = pygame.gfxdraw.rectangle((50,50), 250, Yellow)
+        return Shape_Square
+    elif shape == "Shape_S":
+        Shape_S = pygame.Surface((75,50), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_S, ((0,25),(0,50),(50,50),(50,25),(75,25),(75,0),(25,0),(25,25)),Green)
+        return Shape_S
+    elif shape == "Shape_Z":
+        Shape_Z = pygame.Surface((75,50), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_Z, ((75,25),(75,50),(25,50),(25,25),(0,25),(0,0),(50,0),(50,25)),Red)
+        return Shape_Z
+
 class Player(pygame.sprite.Sprite):
-    #SquareShape
-    def __init__(self, Colour):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.width = 50
-        self.height = 50
-        self.image = pygame.Surface([50, 50])
-        self.image.fill(Colour)
+        self.shape = get_shape(rand_shape())
+        self.image = self.shape
         self.rect = self.image.get_rect()
         self.walls = None
         self.change_x = 0
         self.change_y = 0
-
 
     def update(self):
         self.rect.x += self.change_x
@@ -88,32 +114,15 @@ all_sprite_list.add(wall)
 bottom_walls.add(Wall(75, 550, 251, 1))
 
 
-def rand_shape():
-    num = random.randrange(7)
-    if num == 0:
-        return SquareShape
-    elif num == 1:
-        return IShape
-    elif num == 2:
-        return LShape
-    elif num == 3:
-        return RevLShape
-    elif num == 4:
-        return SShape
-    elif num == 5:
-        return ZShape
-    elif num == 6:
-        return TShape
 
 def main():
     size = (500, 600)
     screen = pygame.display.set_mode(size)
-    pygame.display.set_caption("Tetris")
+    pygame.display.set_caption("Test3.0")
     clock = pygame.time.Clock()
     timer = 0
     block_list = pygame.sprite.Group()
-    shape = rand_shape()
-    player = Player(shape)
+    player = Player()
     player.walls = wall_list
     active_sprite_list = pygame.sprite.Group()
     player.rect.x = 176
@@ -138,7 +147,7 @@ def main():
             player.stop()
         if keys[pygame.K_DOWN] or player.change_y != 0:
             player.go_down()
-        elif keys[pygame.K_UP]:
+        elif keys[pygame.K_UP] and False:
             player.change_y = -25
         else:
             player.stop_fall()
@@ -153,12 +162,12 @@ def main():
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
         for i in bottom_hit_list:
             if player.change_y > 0:
-                wall = Wall(player.rect.x, player.rect.y, player.width, player.height)
+                wall = Wall(player.rect.x, player.rect.y, 1, 1)
                 wall_list.add(wall)
                 all_sprite_list.add(wall)
                 block_list.add(wall)
-                bottom_walls.add(Wall(player.rect.x, player.rect.y - 1, player.width, player.height))
-                #player = Player(colour, 50, 50)
+                bottom_walls.add(Wall(player.rect.x, player.rect.y - 1, 1, 1))
+                player = Player()
                 player.walls = wall_list
                 player.rect.x = 176
                 player.rect.y = 51
