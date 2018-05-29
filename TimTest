@@ -59,7 +59,6 @@ def get_shape(shape):
         Shape_RevL = pygame.Surface((50, 75), pygame.SRCALPHA)
         pygame.gfxdraw.filled_polygon(Shape_RevL,((25,0), (50, 0), (50, 75), (0, 75), (0, 50), (25, 50)),Orange)
         return Shape_RevL
-    #needs to be fixed
     elif shape == "Shape_T":
         Shape_T = pygame.Surface((75, 50), pygame.SRCALPHA)
         pygame.gfxdraw.filled_polygon(Shape_T,((0,25),(0,50),(75,50),(75,25),(50,25),(50,0),(25,0),(25,25)),Purple)
@@ -109,6 +108,9 @@ class Player(pygame.sprite.Sprite):
     def rotate(self):
         self.image = pygame.transform.rotate(self.image, 90)
         self.rect = self.image.get_rect(center=self.rect.center)
+
+    #def hard_drop(self):
+    # self.rect.y =
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -174,6 +176,8 @@ def main():
             player.go_down()
         elif keys[pygame.K_UP] and False:
             player.change_y = -25
+   #     elif keys[pygame.K_SPACE]:
+  #          player.hard_drop()
         else:
             player.stop_fall()
         if keys[pygame.K_UP]:
@@ -184,10 +188,13 @@ def main():
             stop_rotate = 0
         screen.fill(White)
         all_sprite_list.draw(screen)
+        #Grid
         for i in range(51, 550, 25):
             for k in range(76, 325, 25):
                 pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
         pygame.draw.rect(screen, Black, [74,49,253,503], 2)
+        #scoreboard
+        pygame.draw.rect(screen, Black, [340, 50, 150, 200], 4)
         player.update()
         active_sprite_list.draw(screen)
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
