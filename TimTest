@@ -142,8 +142,6 @@ wall_list.add(wall)
 all_sprite_list.add(wall)
 bottom_walls.add(Wall(75, 550, 251, 1))
 
-
-
 def main():
     clock = pygame.time.Clock()
     timer = 0
@@ -193,8 +191,21 @@ def main():
             for k in range(76, 325, 25):
                 pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
         pygame.draw.rect(screen, Black, [74,49,253,503], 2)
-        #scoreboard
+
+        #ScoreBoard
         pygame.draw.rect(screen, Black, [340, 50, 150, 200], 4)
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        Score_title = font.render("Score", True, Black)
+        screen.blit(Score_title, [350, 60])
+        score = 0
+        score_display = font.render(str(score), True, Black)
+        screen.blit(score_display, [350, 80])
+        level_title = font.render("Level", True, Black)
+        screen.blit(level_title, [350, 120])
+        level = 1
+        level_display = font.render(str(level), True, Black)
+        screen.blit(level_display, [350, 140])
+
         player.update()
         active_sprite_list.draw(screen)
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
