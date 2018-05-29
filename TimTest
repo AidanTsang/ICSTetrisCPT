@@ -142,10 +142,14 @@ wall_list.add(wall)
 all_sprite_list.add(wall)
 bottom_walls.add(Wall(75, 550, 251, 1))
 
+
+
 def main():
     clock = pygame.time.Clock()
     timer = 0
+    timer_check = 20
     stop_rotate = 0
+    counter = 0
     block_list = pygame.sprite.Group()
     player = Player()
     player.walls = wall_list
@@ -158,7 +162,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-        if timer == 20:
+        if timer == timer_check:
             player.change_y = 25
             timer = 0
         else:
@@ -216,6 +220,10 @@ def main():
                 player.rect.x = 176
                 player.rect.y = 51
                 active_sprite_list.add(player)
+                counter += 1
+        if counter == 15:
+            timer_check -= 1
+            level += 1
         pygame.display.flip()
         clock.tick(20)
         timer += 1
