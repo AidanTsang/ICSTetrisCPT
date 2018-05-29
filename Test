@@ -166,6 +166,7 @@ bottom_walls.add(Wall(75, 550, 251, 1))
 def main():
     clock = pygame.time.Clock()
     timer = 0
+    timer_check = 20
     stop_rotate = 0
     harddrop = True
     block_list = pygame.sprite.Group()
@@ -180,7 +181,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-        if timer == 100:
+        if timer == timer_check:
             player.change_y = 25
             timer = 0
         else:
