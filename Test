@@ -14,44 +14,65 @@ Blue = (0, 0, 255)
 Purple = (128, 0, 128)
 Orange = (255, 165, 0)
 Yellow = (255, 255, 0)
+LightBlue = (0, 255, 255)
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.shape = self.rand_shape()
-        self.image = self.get_shape(self.shape)
+        self.image = self.get_shape()
         self.rect = self.image.get_rect()
         self.walls = None
         self.change_x = 0
         self.change_y = 0
 
     def rand_shape(self):
-        num = random.randrange(2)
+        num = random.randrange(6)
         if num == 0:
             return "Shape_S"
         elif num == 1:
             return "Shape_Z"
         elif num == 2:
-            return Blue
+            return "Shape_Square"
         elif num == 3:
-            return Purple
+            return "Shape_I"
         elif num == 4:
-            return Orange
+            return "Shape_L"
         elif num == 5:
-            return Yellow
+            return "Shape_T"
 
-    def get_shape(self, shape):
+    def get_shape(self):
         if self.shape == "Shape_S":
-            self.width, self.height = 100, 50
+            self.width, self.height = 75, 50
             Shape_S = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
             pygame.gfxdraw.filled_polygon(Shape_S,((0, 25), (0, 50), (50, 50), (50, 25), (75, 25), (75, 0), (25, 0), (25, 25)),Green)
             return Shape_S
         elif self.shape == "Shape_Z":
-            self.width, self.height = 100, 50
+            self.width, self.height = 75, 50
             Shape_Z = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
             pygame.gfxdraw.filled_polygon(Shape_Z,((75, 25), (75, 50), (25, 50), (25, 25), (0, 25), (0, 0), (50, 0), (50, 25)),Red)
             return Shape_Z
+        elif self.shape == "Shape_Square":
+            self.width, self.height = 50, 50
+            Shape_Square = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            pygame.gfxdraw.filled_polygon(Shape_Square, ((0, 0), (0, 50), (50, 50), (50, 0)), Yellow)
+            return Shape_Square
+        elif self.shape == "Shape_I":
+            self.width, self.height = 100, 25
+            Shape_I = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            pygame.gfxdraw.filled_polygon(Shape_I, ((0, 0), (0, 25), (100, 25), (100, 0)), LightBlue)
+            return Shape_I
+        elif self.shape == "Shape_L":
+            self.width, self.height = 50, 75
+            Shape_L = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            pygame.gfxdraw.filled_polygon(Shape_L, ((0, 0), (25, 0), (25, 50), (50, 50), (50, 75), (0, 75)), Blue)
+            return Shape_L
+        elif self.shape == "Shape_T":
+            self.width, self.height = 75, 50
+            Shape_T = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            pygame.gfxdraw.filled_polygon(Shape_T, ((0, 25), (0, 50), (75, 50), (75, 25), (50, 25), (50, 0), (25, 0), (25, 25)), Purple)
+            return Shape_T
 
     def update(self):
         self.rect.x += self.change_x
@@ -85,9 +106,30 @@ class Player(pygame.sprite.Sprite):
         self.change_y = 0
 
     def rotate(self):
-        self.image = pygame.transform.rotate(self.image, 90)
-        self.rect = self.image.get_rect(center=(self.rect.center))
         self.width, self.height = self.height, self.width
+        if self.shape == "Shape_S":
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.rect.center = (self.rect.x + self.width/2, self.rect.y + self.height/2)
+            self.rect = self.image.get_rect(center=(self.rect.center))
+        elif self.shape == "Shape_Z":
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect = self.image.get_rect(center=(self.rect.center))
+        elif self.shape == "Shape_I":
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect = self.image.get_rect(center=(self.rect.center))
+        elif self.shape == "Shape_L":
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect = self.image.get_rect(center=(self.rect.center))
+        elif self.shape == "Shape_T":
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect = self.image.get_rect(center=(self.rect.center))
+
+    def hard_drop(self):
+        self.rect.y = 551 - self.height
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -125,6 +167,7 @@ def main():
     clock = pygame.time.Clock()
     timer = 0
     stop_rotate = 0
+    harddrop = True
     block_list = pygame.sprite.Group()
     player = Player()
     player.walls = wall_list
@@ -137,8 +180,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-        if timer == 20:
-            player.change_y = 0
+        if timer == 100:
+            player.change_y = 25
             timer = 0
         else:
             player.change_y = 0
@@ -151,8 +194,6 @@ def main():
             player.stop()
         if keys[pygame.K_DOWN] or player.change_y != 0:
             player.go_down()
-        elif keys[pygame.K_UP] and False:
-            player.change_y = -25
         else:
             player.stop_fall()
         if keys[pygame.K_UP]:
@@ -161,6 +202,12 @@ def main():
                 stop_rotate += 1
         else:
             stop_rotate = 0
+        if keys[pygame.K_SPACE]:
+            if harddrop:
+                player.hard_drop()
+                harddrop = False
+        else:
+            harddrop = True
         screen.fill(White)
         all_sprite_list.draw(screen)
         for i in range(51, 550, 25):
@@ -171,13 +218,13 @@ def main():
         active_sprite_list.draw(screen)
         bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
         for i in bottom_hit_list:
-            if player.change_y > 0:
+            if player.rect.y <= 526:
                 player = Player()
                 player.walls = wall_list
                 player.rect.x = 176
                 player.rect.y = 51
                 active_sprite_list.add(player)
-
+        print(player.rect.x, player.rect.y,player.width,player.height)
         pygame.display.flip()
         clock.tick(20)
         timer += 1
