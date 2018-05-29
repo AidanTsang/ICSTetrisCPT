@@ -33,7 +33,33 @@ def rand_shape():
     elif num == 6:
         return "Shape_T"
 
-
+def get_shape(shape):
+    if shape == "Shape_S":
+        Shape_S_width, Shape_S_height = 75, 50
+        Shape_S = pygame.Surface((Shape_S_width,Shape_S_height), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_S, ((0,25),(0,50),(50,50),(50,25),(75,25),(75,0),(25,0),(25,25)),Green)
+        return Shape_S
+    elif shape == "Shape_Z":
+        Shape_Z = pygame.Surface((75,50), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_Z, ((75,25),(75,50),(25,50),(25,25),(0,25),(0,0),(50,0),(50,25)),Red)
+        return Shape_Z
+    elif shape == "Shape_Square":
+        Shape_Square = pygame.Surface((50, 50), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_Square,((0,0),(0,50),(50,50),(50,0)),Yellow)
+        return Shape_Square
+    elif shape == "Shape_I":
+        Shape_I = pygame.Surface((100, 25), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_I,((0,0),(0,25),(100,25),(100,0)),LightBlue)
+        return Shape_I
+    elif shape == "Shape_L":
+        Shape_L = pygame.Surface((50, 75), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_L,((0,0),(25,0),(25,75),(0,75)), Blue)
+        return Shape_L
+    #needs to be fixed
+    elif shape == "Shape_T":
+        Shape_T = pygame.Surface((75, 50), pygame.SRCALPHA)
+        pygame.gfxdraw.filled_polygon(Shape_T,((0,25),(0,50),(75,25),(75,50),(25,0),(50,0),(25,50),(50,50)),Purple)
+        return Shape_T
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
