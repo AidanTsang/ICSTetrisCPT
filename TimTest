@@ -111,6 +111,9 @@ class Player(pygame.sprite.Sprite):
     def stop_fall(self):
         self.change_y = 0
 
+    def hard_drop(self):
+        self.rect.y = 551 - self.height
+
     def rotate(self):
         self.width, self.height = self.height, self.width
         if self.shape == "Shape_S":
@@ -129,13 +132,14 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.image, 90)
             self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
             self.rect = self.image.get_rect(center=(self.rect.center))
+        elif self.shape == "Shape_RevL":
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect = self.image.get_rect(center=(self.rect.center))
         elif self.shape == "Shape_T":
             self.image = pygame.transform.rotate(self.image, 90)
             self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
             self.rect = self.image.get_rect(center=(self.rect.center))
-
-    def hard_drop(self):
-        self.rect.y = 551 - self.height
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
