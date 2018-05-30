@@ -106,27 +106,34 @@ class Player(pygame.sprite.Sprite):
         self.change_y = 0
 
     def rotate(self):
-        self.width, self.height = self.height, self.width
         if self.shape == "Shape_S":
+            self.width, self.height = self.height, self.width
             self.image = pygame.transform.rotate(self.image, 90)
             self.rect.center = (self.rect.x + self.width/2, self.rect.y + self.height/2)
             self.rect = self.image.get_rect(center=(self.rect.center))
         elif self.shape == "Shape_Z":
+            self.width, self.height = self.height, self.width
             self.image = pygame.transform.rotate(self.image, 90)
             self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
             self.rect = self.image.get_rect(center=(self.rect.center))
         elif self.shape == "Shape_I":
             self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect.center = (self.rect.x + (62.5 if self.width == 100 else 0) , self.rect.y + (62.5 if self.height == 100 else 0))
             self.rect = self.image.get_rect(center=(self.rect.center))
+            self.width, self.height = self.height, self.width
         elif self.shape == "Shape_L":
+            L_rotx = False
             self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect.center = (self.rect.x + (self.width-(25 if L_rotx else 0) )/2, self.rect.y + (self.height-25)/2)
             self.rect = self.image.get_rect(center=(self.rect.center))
+            L_rotx = True if self.width == 75 else 0
+            self.width, self.height = self.height, self.width
         elif self.shape == "Shape_T":
             self.image = pygame.transform.rotate(self.image, 90)
             self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
             self.rect = self.image.get_rect(center=(self.rect.center))
+            self.width, self.height = self.height, self.width
+
 
     def hard_drop(self):
         self.rect.y = 551 - self.height
@@ -169,6 +176,7 @@ def main():
     timer_check = 20
     stop_rotate = 0
     harddrop = True
+
     block_list = pygame.sprite.Group()
     player = Player()
     player.walls = wall_list
