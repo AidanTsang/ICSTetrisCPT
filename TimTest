@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
         self.change_y = 0
 
     def rand_shape(self):
-        num = random.randrange(6)
+        num = random.randrange(7)
         if num == 0:
             return "Shape_S"
         elif num == 1:
@@ -39,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         elif num == 4:
             return "Shape_L"
         elif num == 5:
+            return "Shape_RevL"
+        elif num == 6:
             return "Shape_T"
 
     def get_shape(self):
@@ -67,6 +69,11 @@ class Player(pygame.sprite.Sprite):
             Shape_L = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
             pygame.gfxdraw.filled_polygon(Shape_L, ((0, 0), (25, 0), (25, 50), (50, 50), (50, 75), (0, 75)), Blue)
             return Shape_L
+        elif self.shape == "Shape_RevL":
+            self.width, self.height = 50, 75
+            Shape_RevL = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            pygame.gfxdraw.filled_polygon(Shape_RevL, ((25, 0), (50, 0), (50, 75), (0, 75), (0, 50), (25, 50)), Orange)
+            return Shape_RevL
         elif self.shape == "Shape_T":
             self.width, self.height = 75, 50
             Shape_T = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
