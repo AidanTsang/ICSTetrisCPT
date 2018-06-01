@@ -61,6 +61,7 @@ class Player(pygame.sprite.Sprite):
             return Shape_Square
         elif self.shape == "Shape_I":
             self.width, self.height = 100, 25
+            centreX, centreY = 12.5,37.5
             Shape_I = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
             pygame.gfxdraw.filled_polygon(Shape_I, ((0, 0), (0, 25), (100, 25), (100, 0)), LightBlue)
             return Shape_I
@@ -126,8 +127,9 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(center=(self.rect.center))
         elif self.shape == "Shape_I":
             self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
+            self.rect.center = (self.rect.x + (37.5 if self.width == 100 else 25), self.rect.y + (37.5 if self.height == 100 else 25))
             self.rect = self.image.get_rect(center=(self.rect.center))
+            self.width, self.height = self.height, self.width
         elif self.shape == "Shape_L":
             self.image = pygame.transform.rotate(self.image, 90)
             self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
@@ -220,6 +222,7 @@ def main():
                 harddrop = False
         else:
             harddrop = True
+
         screen.fill(White)
         all_sprite_list.draw(screen)
         for i in range(51, 550, 25):
@@ -256,7 +259,7 @@ def main():
                     level += 1
                     counter = 0
                     timer = 0
-        print(timer, timer_check)
+        #print(timer, timer_check)
         pygame.display.flip()
         clock.tick(20)
         timer += 1
