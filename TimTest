@@ -151,7 +151,6 @@ def main():
     score = 0
     stop_rotate = 0
     harddrop = True
-    #block_list = pygame.sprite.Group()
     # create grid
     screen.fill(White)
     for i in range(0, 500, 25):
@@ -161,13 +160,8 @@ def main():
     player = rand_shape(num)
     color = shape_color(num)
     for i in range(4):
-        pygame.draw.rect(screen, color, [player[i][0]*25 + 100, player[i][1]*25 + 100, 25, 25])
+        pygame.draw.rect(screen, color, [player[i][0]*25 + 100, player[i][1]*25, 25, 25])
     pygame.display.flip()
-    #player.walls = wall_list
-    #active_sprite_list = pygame.sprite.Group()
-    #player.rect.x = 176
-    #player.rect.y = 51
-    #active_sprite_list.add(player)
 
     done = False
     while not done:
@@ -201,10 +195,6 @@ def main():
                 harddrop = False
         else:
             harddrop = True
-
-
-        #all_sprite_list.draw(screen)
-
 
         # ScoreBoard
         pygame.draw.rect(screen, Black, [270, 50, 150, 200], 4)
