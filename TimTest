@@ -87,16 +87,31 @@ def shape_color(num):
 
 def go_left(shape):
     for i in range(len(shape)):
+        board[shape[i][1]][shape[i][0]+4]=White
+    for i in range(20):
+        for k in range(10):
+            pygame.draw.rect(screen, board[i][k], [k*25, i*25, 25, 25])
+    for i in range(len(shape)):
         shape[i][0]-=1
     return shape
 
 def go_right(shape):
     for i in range(len(shape)):
+        board[shape[i][1]][shape[i][0] + 4] = White
+    for i in range(20):
+        for k in range(10):
+            pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
+    for i in range(len(shape)):
         shape[i][0]+=1
     return shape
 
 def drop(shape):
-    for i in range(3):
+    for i in range(len(shape)):
+        board[shape[i][1]][shape[i][0] + 4] = White
+    for i in range(20):
+        for k in range(10):
+            pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
+    for i in range(len(shape)):
         shape[i][1]+=1
     return shape
 
@@ -163,7 +178,6 @@ def main():
                 pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            old_location = shape
             shape = go_left(shape)
 
         elif keys[pygame.K_RIGHT]:
@@ -191,6 +205,21 @@ def main():
         for i in range(20):
             for k in range(10):
                 pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
+        for i in range(len(shape)):
+            if shape[i][1]==19:
+                num = random.randrange(6)
+                shape = rand_shape(num)
+                color = shape_color(num)
+
+                # add shape to board
+                for i in range(len(shape)):
+                    board[shape[i][1]][shape[i][0] + 4] = color
+                # spawn shape at top of screen
+                print(board[0])
+                print(board[1])
+                for i in range(20):
+                    for k in range(10):
+                        pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
 
         # ScoreBoard
         pygame.draw.rect(screen, Black, [270, 50, 150, 200], 4)
