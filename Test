@@ -1,12 +1,9 @@
-import pygame
-import random
-import pygame.gfxdraw
-pygame.init()
-size = (500, 600)
+import pygame, random, sys
+size = (450, 550)
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Test4.0")
 
 Black = (0, 0, 0)
+Gray = (200,200,200)
 White = (255, 255, 255)
 Green = (0, 255, 0)
 Red = (255, 0, 0)
@@ -16,257 +13,232 @@ Orange = (255, 165, 0)
 Yellow = (255, 255, 0)
 LightBlue = (0, 255, 255)
 
+width = 10
+length = 20
+board = None
+shape = None
+shape_color = None
+shape_col = 0
+shape_row = 0
+shape_rotate = True
+level = 1
+score = 0
+time = 550
+counter = 0
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.shape = self.rand_shape()
-        self.image = self.get_shape()
-        self.rect = self.image.get_rect()
-        self.walls = None
-        self.change_x = 0
-        self.change_y = 0
+EVENT_PAINT = 25
+EVENT_TIMER = 26
 
-    def rand_shape(self):
-        num = random.randrange(6)
-        if num == 0:
-            return "Shape_S"
-        elif num == 1:
-            return "Shape_Z"
-        elif num == 2:
-            return "Shape_Square"
-        elif num == 3:
-            return "Shape_I"
-        elif num == 4:
-            return "Shape_L"
-        elif num == 5:
-            return "Shape_"
-        elif num == 6:
-            return "Shape_T"
+def new_board():
+    global board
+    board = [[White for i in range(width)] for k in range(length)]
 
-    def get_shape(self):
-        if self.shape == "Shape_S":
-            self.width, self.height = 75, 50
-            Shape_S = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_S,((0, 25), (0, 50), (50, 50), (50, 25), (75, 25), (75, 0), (25, 0), (25, 25)),Green)
-            return Shape_S
-        elif self.shape == "Shape_Z":
-            self.width, self.height = 75, 50
-            Shape_Z = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_Z,((75, 25), (75, 50), (25, 50), (25, 25), (0, 25), (0, 0), (50, 0), (50, 25)),Red)
-            return Shape_Z
-        elif self.shape == "Shape_Square":
-            self.width, self.height = 50, 50
-            Shape_Square = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_Square, ((0, 0), (0, 50), (50, 50), (50, 0)), Yellow)
-            return Shape_Square
-        elif self.shape == "Shape_I":
-            self.width, self.height = 100, 25
-            Shape_I = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_I, ((0, 0), (0, 25), (100, 25), (100, 0)), LightBlue)
-            return Shape_I
-        elif self.shape == "Shape_L":
-            self.width, self.height = 50, 75
-            Shape_L = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_L, ((0, 0), (25, 0), (25, 50), (50, 50), (50, 75), (0, 75)), Blue)
-            return Shape_L
-        elif self.shape == "Shape_RevL":
-            self.width, self.height = 50, 75
-            Shape_RevL = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_RevL, ((25, 0), (50, 0), (50, 75), (0, 75), (0, 50), (25, 50)), Orange)
-            return Shape_RevL
-        elif self.shape == "Shape_T":
-            self.width, self.height = 75, 50
-            Shape_T = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            pygame.gfxdraw.filled_polygon(Shape_T, ((0, 25), (0, 50), (75, 50), (75, 25), (50, 25), (50, 0), (25, 0), (25, 25)), Purple)
-            return Shape_T
+Shape_Z = [[-1, 0], [0, 0], [0, 1], [1, 1]]
+Shape_S = [[-1, 1], [0, 1], [0, 0], [1, 0]]
+Shape_Square = [[0,1], [1,1], [1,0], [0,0]]
+Shape_I = [[-1, 0], [0, 0], [1, 0], [2, 0]]
+Shape_L = [[-1 ,1], [-1, 0], [0, 0], [1, 0]]
+Shape_RevL = [[-1, 0], [0, 0], [1, 0], [1, 1]]
+Shape_T = [[ -1, 0], [0, 0], [1, 0], [0, 1]]
+shapes = [Shape_Z, Shape_S, Shape_Square, Shape_I, Shape_L, Shape_RevL, Shape_T]
+colors = [Red, Green, Yellow, LightBlue, Blue, Orange, Purple]
+spins = [True, True, False, True, True, True, True ]
 
-    def update(self):
-        self.rect.x += self.change_x
-        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
-        for block in block_hit_list:
-            if self.change_x > 0:
-                self.rect.right = block.rect.left
-            else:
-                self.rect.left = block.rect.right
-        self.rect.y += self.change_y
-        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
-        for block in block_hit_list:
-            if self.change_y > 0:
-                self.rect.bottom = block.rect.top
-            else:
-                self.rect.top = block.rect.bottom
+def go_left():
+    move(0, -1)
+    if not valid_position():
+        move(0,1)
+        return False
+    return True
 
-    def go_left(self):
-        self.change_x = -25
+def move(row, col):
+    global shape_row, shape_col
+    shape_row += row
+    shape_col += col
 
-    def go_right(self):
-        self.change_x = 25
+def valid_position():
+    for i, k in shape:
+        row = shape_row+i
+        col = shape_col+k
+        if col<0 or col>=width:
+            return False
+        if row>=length:
+            return False
+        if board[row][col]!=White:
+            return False
+    return True
 
-    def go_down(self):
-        self.change_y = 25
+def go_right():
+    move(0, 1)
+    if not valid_position():
+        move(0, -1)
+        return False
+    return True
 
-    def stop(self):
-        self.change_x = 0
+def drop():
+    t = 0
+    while go_down():
+        t += 1
+    return t
 
-    def stop_fall(self):
-        self.change_y = 0
+def go_down():
+    move(1, 0)
+    if not valid_position():
+        move(-1, 0)
+        return False
+    return True
 
-    def rotate(self):
-        if self.shape == "Shape_S":
-            self.width, self.height = self.height, self.width
-            self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width/2, self.rect.y + self.height/2)
-            self.rect = self.image.get_rect(center=(self.rect.center))
-        elif self.shape == "Shape_Z":
-            self.width, self.height = self.height, self.width
-            self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
-            self.rect = self.image.get_rect(center=(self.rect.center))
-        elif self.shape == "Shape_I":
-            self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + (37.5 if self.width == 100 else 25) , self.rect.y + (37.5 if self.height == 100 else 25))
-            self.rect = self.image.get_rect(center=(self.rect.center))
-            self.width, self.height = self.height, self.width
-        elif self.shape == "Shape_L":
-            self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x , self.rect.y)
-            self.rect = self.image.get_rect(center=(self.rect.center))
-            self.width, self.height = self.height, self.width
-        elif self.shape == "Shape_RevL":
-            self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
-            self.rect = self.image.get_rect(center=(self.rect.center))
-            self.width, self.height == self.height, self.width
-        elif self.shape == "Shape_T":
-            self.image = pygame.transform.rotate(self.image, 90)
-            self.rect.center = (self.rect.x + self.width / 2, self.rect.y + self.height / 2)
-            self.rect = self.image.get_rect(center=(self.rect.center))
-            self.width, self.height = self.height, self.width
+def rotate():
+    global shape, shape_rotate
+    if shape_rotate:
+        shape = [[j, -i] for i, j in shape]
+        if not valid_position():
+            shape = [[-j, i] for i, j in shape]
+            return False
+        return True
+    return False
 
+def new_game():
+    global level, counter, time
+    level = 1
+    counter = 0
+    new_shape()
+    new_board()
+    pygame.time.set_timer(EVENT_TIMER, time)
 
-    def hard_drop(self):
-        self.rect.y = 551 - self.height
-
-class Wall(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height):
-        super().__init__()
-        self.image = pygame.Surface([width, height])
-        self.image.fill((0,0,0))
-        self.rect = self.image.get_rect()
-        self.rect.y = y
-        self.rect.x = x
-
-all_sprite_list = pygame.sprite.Group()
-wall_list = pygame.sprite.Group()
-bottom_walls = pygame.sprite.Group()
-
-wall = Wall(75, 50, 1, 501)
-wall_list.add(wall)
-all_sprite_list.add(wall)
-
-wall = Wall(75, 50, 251, 1)
-wall_list.add(wall)
-all_sprite_list.add(wall)
-
-wall = Wall(326, 50, 1, 501)
-wall_list.add(wall)
-all_sprite_list.add(wall)
-
-wall = Wall(75, 551, 251, 1)
-wall_list.add(wall)
-all_sprite_list.add(wall)
-bottom_walls.add(Wall(75, 550, 251, 1))
-
-
+def start_game():
+    
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                return True
+        elif event.type == pygame.QUIT:
+            sys.exit()
 
 def main():
-    clock = pygame.time.Clock()
-    timer = 0
-    timer_check = 20
-    stop_rotate = 0
-    timer_check = 20
-    counter = 0
-    level = 1
-    score = 0
-    harddrop = True
+    pygame.init()
+    pygame.display.set_caption("ICSTetrisCPT")
+    while True:
+        if start_game():
+            new_game()
+            while True:
+                process_event()
 
-    block_list = pygame.sprite.Group()
-    player = Player()
-    player.walls = wall_list
-    active_sprite_list = pygame.sprite.Group()
-    player.rect.x = 176
-    player.rect.y = 51
-    active_sprite_list.add(player)
-    done = False
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-        if timer == timer_check:
-            player.change_y = 25
-            timer = 0
-        else:
-            player.change_y = 0
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player.change_x == 0:
-            player.go_left()
-        elif keys[pygame.K_RIGHT] and player.change_x == 0:
-            player.go_right()
-        else:
-            player.stop()
-        if keys[pygame.K_DOWN] or player.change_y != 0:
-            player.go_down()
-        else:
-            player.stop_fall()
-        if keys[pygame.K_UP]:
-            if stop_rotate == 0:
-                player.rotate()
-                stop_rotate += 1
-        else:
-            stop_rotate = 0
-        if keys[pygame.K_SPACE]:
-            if harddrop:
-                player.hard_drop()
-                harddrop = False
-        else:
-            harddrop = True
-        screen.fill(White)
-        all_sprite_list.draw(screen)
-        for i in range(51, 550, 25):
-            for k in range(76, 325, 25):
-                pygame.draw.rect(screen, (200,200,200), [k, i, 25, 25], 1)
-        pygame.draw.rect(screen, Black, [74,49,253,503], 2)
-        pygame.draw.rect(screen, Black, [340, 50, 150, 200], 4)
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        Score_title = font.render("Score", True, Black)
-        screen.blit(Score_title, [350, 60])
-        score_display = font.render(str(score), True, Black)
-        screen.blit(score_display, [350, 80])
-        level_title = font.render("Level", True, Black)
-        screen.blit(level_title, [350, 120])
-        level_display = font.render(str(level), True, Black)
-        screen.blit(level_display, [350, 140])
-        player.update()
-        active_sprite_list.draw(screen)
-        bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
-        for i in bottom_hit_list:
-            if player.rect.y <= 526:
-                player = Player()
-                player.walls = wall_list
-                player.rect.x = 176
-                player.rect.y = 51
-                active_sprite_list.add(player)
-            if counter == 5:
-                if timer_check >= 4:
-                    timer_check -= 2
-                    level += 1
-                    counter = 0
-                    timer = 0
-        print(player.rect.x, player.rect.y,player.width,player.height)
-        pygame.display.flip()
-        clock.tick(20)
-        timer += 1
+def new_shape():
+    global shape, shape_color, shape_row, shape_col, shape_rotate
+    shape_row = 0
+    shape_col = width//2-1
+    num = random.randrange(7)
+    shape = shapes[num]
+    shape_color = colors[num]
+    shape_rotate = spins[num]
 
+def paint():
+    screen.fill(White)
+    for i, row in enumerate(board):
+        for k, cell in enumerate(row):
+            pygame.draw.rect(screen, cell, [k * 25, i * 25, 25, 25])
+            pygame.draw.rect(screen, Gray, [k * 25, i * 25, 25, 25], 1)
+
+    if shape:
+        for i, k in shape:
+            row = shape_row+i
+            col = shape_col+k
+            pygame.draw.rect(screen, shape_color, [col * 25, row * 25, 25, 25])
+    # ScoreBoard
+    pygame.draw.rect(screen, Black, [270, 50, 150, 200], 4)
+    font = pygame.font.SysFont('Calibri', 25, True, False)
+    Score_title = font.render("Score", True, Black)
+    screen.blit(Score_title, [280, 60])
+    score_display = font.render(str(score), True, Black)
+    screen.blit(score_display, [280, 80])
+    level_title = font.render("Level", True, Black)
+    screen.blit(level_title, [280, 120])
+    level_display = font.render(str(level), True, Black)
+    screen.blit(level_display, [280, 140])
+    pygame.display.flip()
+
+def check_final():
+    is_final = False
+    for i, k in shape:
+        row = shape_row + 1 + i
+        col = shape_col + k
+        if row == length:
+            is_final = True
+            break;
+        if board[row][col] != White:
+            is_final = True
+            break;
+    if is_final:
+        for i, k in shape:
+            row = shape_row + i
+            col = shape_col + k
+            board[row][col] = shape_color
+        global counter, time, level
+        remove_filled()
+        new_shape()
+        counter +=1
+        if counter == 15 and time>=100:
+            level += 1
+            counter = 0
+            time -=50
+            pygame.time.set_timer(EVENT_TIMER, time)
+def is_full(row):
+    for i in range(width):
+        if board[row][i] == White:
+            return False
+    return True
+
+def is_empty(row):
+    for i in range(width):
+        if board[row][i] != White:
+            return False
+    return True
+
+def remove_filled():
+    global score
+    for i in range(length-1, 0, -1):
+        while is_full(i):
+            score += 100
+            for j in range(i, 0, -1):
+                for n in range(width):
+                    if (j==0):
+                        board[j][n] = White
+                    else:
+                        board[j][n] = board[j-1][n]
+        if is_empty(i):
+            break
+
+def process_event():
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key==pygame.K_LEFT:
+                if go_left():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_RIGHT:
+                if go_right():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_UP:
+                if rotate():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_DOWN:
+                if go_down():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_SPACE:
+                if drop():
+                    check_final()
+                    paint()
+        elif event.type == EVENT_PAINT:
+            paint()
+        elif event.type == EVENT_TIMER:
+            if go_down():
+                check_final()
+                paint()
+        elif event.type == pygame.QUIT:
+            sys.exit()
 if __name__ == "__main__":
-    main()
+   main()
