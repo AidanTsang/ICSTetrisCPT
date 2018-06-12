@@ -1,11 +1,9 @@
-import pygame, random
-import pygame.gfxdraw
-pygame.init()
+import pygame, random, sys
 size = (450, 550)
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Test4.0")
 
 Black = (0, 0, 0)
+Gray = (200,200,200)
 White = (255, 255, 255)
 Green = (0, 255, 0)
 Red = (255, 0, 0)
@@ -17,241 +15,212 @@ LightBlue = (0, 255, 255)
 
 width = 10
 length = 20
-board = [[0 for i in range(width)] for k in range(length)]
-for i in range(length):
-    for j in range(width):
-        board[i][j] = White
+board = None
+shape = None
+shape_color = None
+shape_col = 0
+shape_row = 0
+shape_rotate = True
+level = 1
+score = 0
+time = 550
+counter = 0
 
-#class Player(pygame.sprite.Sprite):
-#    def __init__(self):
-#        pygame.sprite.Sprite.__init__(self)
-#        self.image = self.rand_shape()
-#        self.rect = self.image.get_rect()
-#        self.walls = None
-#        self.change_x = 0
-#        self.change_y = 0
+EVENT_PAINT = 25
+EVENT_TIMER = 26
 
-def rand_shape(num):
-    if num == 0:
-        Shape_Z = [[-1, 0], [0, 0], [0, 1], [1, 1]]
-        return Shape_Z
-    elif num == 1:
-        Shape_S = [[-1, 1], [0,1], [0,0], [1,0]]
-        return Shape_S
-    elif num == 2:
-        Shape_Square = [[0,1], [1,1], [1,0], [0,0]]
-        return Shape_Square
-    elif num == 3:
-        Shape_I = [[-1, 0], [0, 0], [1, 0], [2, 0]]
-        return Shape_I
-    elif num == 4:
-        Shape_L = [[-1 ,1], [-1, 0], [0, 0], [1, 0]]
-        return  Shape_L
-    elif num == 5:
-        Shape_RevL = [[-1, 0], [0, 0], [1, 0], [1, 1]]
-        return Shape_RevL
-    elif num == 6:
-        Shape_T = [[ -1, 0], [0, 0], [1, 0], [0, 1]]
-        return Shape_T
+def new_board():
+    global board
+    board = [[White for i in range(width)] for k in range(length)]
 
-def shape_color(num):
-    if num == 0:
-        return Red
-    if num == 1:
-        return Green
-    if num == 2:
-        return Yellow
-    if num == 3:
-        return LightBlue
-    if num == 4:
-        return Blue
-    if num == 5:
-        return Orange
-    if num == 6:
-        return Purple
-#    def update(self):
-#        self.rect.x += self.change_x
-#        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
-#        for block in block_hit_list:
-#            if self.change_x > 0:
-#                self.rect.right = block.rect.left
-#            else:
-#                self.rect.left = block.rect.right
-#        self.rect.y += self.change_y
-#        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
-#        for block in block_hit_list:
-#            if self.change_y > 0:
-#                self.rect.bottom = block.rect.top
-#            else:
-#                self.rect.top = block.rect.bottom
+Shape_Z = [[-1, 0], [0, 0], [0, 1], [1, 1]]
+Shape_S = [[-1, 1], [0, 1], [0, 0], [1, 0]]
+Shape_Square = [[0,1], [1,1], [1,0], [0,0]]
+Shape_I = [[-1, 0], [0, 0], [1, 0], [2, 0]]
+Shape_L = [[-1 ,1], [-1, 0], [0, 0], [1, 0]]
+Shape_RevL = [[-1, 0], [0, 0], [1, 0], [1, 1]]
+Shape_T = [[ -1, 0], [0, 0], [1, 0], [0, 1]]
+shapes = [Shape_Z, Shape_S, Shape_Square, Shape_I, Shape_L, Shape_RevL, Shape_T]
+colors = [Red, Green, Yellow, LightBlue, Blue, Orange, Purple]
+spins = [True, True, False, True, True, True, True ]
 
-def go_left(shape):
-    for i in range(len(shape)):
-        board[shape[i][1]][shape[i][0]+4]=White
-    for i in range(20):
-        for k in range(10):
-            pygame.draw.rect(screen, board[i][k], [k*25, i*25, 25, 25])
-    for i in range(len(shape)):
-        shape[i][0]-=1
-    return shape
+def go_left():
+    move(0, -1)
+    if not valid_position():
+        move(0,1)
+        return False
+    return True
 
-def go_right(shape):
-    for i in range(len(shape)):
-        board[shape[i][1]][shape[i][0] + 4] = White
-    for i in range(20):
-        for k in range(10):
-            pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
-    for i in range(len(shape)):
-        shape[i][0]+=1
-    return shape
+def move(row, col):
+    global shape_row, shape_col
+    shape_row += row
+    shape_col += col
 
-def drop(shape):
-    for i in range(len(shape)):
-        board[shape[i][1]][shape[i][0] + 4] = White
-    for i in range(20):
-        for k in range(10):
-            pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
-    for i in range(len(shape)):
-        shape[i][1]+=1
-    return shape
+def valid_position():
+    for i, k in shape:
+        row = shape_row+i
+        col = shape_col+k
+        if col<0 or col>=width:
+            return False
+        if row>=length:
+            return False
+        if board[row][col]!=White:
+            return False
+    return True
 
-#    def stop(self):
-#        self.change_x = 0
+def go_right():
+    move(0, 1)
+    if not valid_position():
+        move(0, -1)
+        return False
+    return True
 
-#    def stop_fall(self):
-#        self.change_y = 0
+def drop():
+    t = 0
+    while go_down():
+        t += 1
+    return t
 
-def rotate(shape):
-    for i in range(3):
-        oldX = shape[i][0]
-        shape[i][0]= 0-2*shape[i][1]
-        shape[i][1]=oldX
-    return shape
+def go_down():
+    move(1, 0)
+    if not valid_position():
+        move(-1, 0)
+        return False
+    return True
+
+def rotate():
+    global shape, shape_rotate
+    if shape_rotate:
+        shape = [[j, -i] for i, j in shape]
+        if not valid_position():
+            shape = [[-j, i] for i, j in shape]
+            return False
+        return True
+    return False
+
+def new_game():
+    global level, counter, time
+    level = 1
+    counter = 0
+    new_shape()
+    new_board()
+    pygame.time.set_timer(EVENT_TIMER, time)
 
 def main():
-    clock = pygame.time.Clock()
-    timer = 0
-    timer_check = 20
-    counter = 0
-    level = 1
-    score = 0
-    stop_rotate = 0
-    harddrop = True
-    # create grid
+    pygame.init()
+    pygame.display.set_caption("ICSTetrisCPT")
+    new_game()
+    while True:
+        process_event()
+
+def new_shape():
+    global shape, shape_color, shape_row, shape_col, shape_rotate
+    shape_row = 0
+    shape_col = width//2-1
+    num = random.randrange(7)
+    shape = shapes[num]
+    shape_color = colors[num]
+    shape_rotate = spins[num]
+
+def paint():
     screen.fill(White)
-    for i in range(0, 500, 25):
-        for k in range(0, 250, 25):
-            pygame.draw.rect(screen, (200, 200, 200), [k, i, 25, 25], 1)
-    num = random.randrange(6)
-    shape = rand_shape(num)
-    color = shape_color(num)
+    for i, row in enumerate(board):
+        for k, cell in enumerate(row):
+            pygame.draw.rect(screen, cell, [k * 25, i * 25, 25, 25])
+            pygame.draw.rect(screen, Gray, [k * 25, i * 25, 25, 25], 1)
 
-    #add shape to board
-    for i in range(len(shape)):
-        board[shape[i][1]][shape[i][0]+4]=color
-    #spawn shape at top of screen
-    print(board[0])
-    print(board[1])
-    for i in range(20):
-        for k in range(10):
-            pygame.draw.rect(screen, board[i][k], [k*25, i*25, 25, 25])
+    if shape:
+        for i, k in shape:
+            row = shape_row+i
+            col = shape_col+k
+            pygame.draw.rect(screen, shape_color, [col * 25, row * 25, 25, 25])
+    # ScoreBoard
+    pygame.draw.rect(screen, Black, [270, 50, 150, 200], 4)
+    font = pygame.font.SysFont('Calibri', 25, True, False)
+    Score_title = font.render("Score", True, Black)
+    screen.blit(Score_title, [280, 60])
+    score_display = font.render(str(score), True, Black)
+    screen.blit(score_display, [280, 80])
+    level_title = font.render("Level", True, Black)
+    screen.blit(level_title, [280, 120])
+    level_display = font.render(str(level), True, Black)
+    screen.blit(level_display, [280, 140])
+    pygame.display.flip()
 
-    done = False
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-        if timer == timer_check:
-            for i in range(4):
-                old_location = shape
-                #replace old location with white
-                for k in range(len(old_location)):
-                    board[old_location[k][1]][old_location[k][0] + 4] = White
-                shape[i][1] += 1
-            timer = 0
-        #place new coordinates on board
-        for i in range(len(shape)):
-            board[shape[i][1]][shape[i][0] + 4] = color
-        # draw board on screen
-        for i in range(20):
-            for k in range(10):
-                pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            shape = go_left(shape)
+def check_final():
+    is_final = False
+    for i, k in shape:
+        row = shape_row + 1 + i
+        col = shape_col + k
+        if row == length:
+            is_final = True
+            break;
+        if board[row][col] != White:
+            is_final = True
+            break;
+    if is_final:
+        for i, k in shape:
+            row = shape_row + i
+            col = shape_col + k
+            board[row][col] = shape_color
+        global counter, time, level
+        remove_filled()
+        new_shape()
+        counter +=1
+        if counter == 15 and time>=100:
+            level += 1
+            counter = 0
+            time -=50
+            pygame.time.set_timer(EVENT_TIMER, time)
+def is_full(row):
+    for i in range(width):
+        if board[row][i] == White:
+            return False
+    return True
 
-        elif keys[pygame.K_RIGHT]:
-            shape = go_right(shape)
-#        else:
-#            player.stop()
-        if keys[pygame.K_DOWN]:
-            shape = drop(shape)
-#        else:
-#            player.stop_fall()
-        if keys[pygame.K_UP]:
-            if stop_rotate == 0:
-                shape = rotate(shape)
-                stop_rotate += 1
-        else:
-            stop_rotate = 0
-        if keys[pygame.K_SPACE]:
-            if harddrop:
-                shape.hard_drop()
-                harddrop = False
-        else:
-            harddrop = True
-        for i in range(len(shape)):
-            board[shape[i][1]][shape[i][0] + 4] = color
-        for i in range(20):
-            for k in range(10):
-                pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
-        for i in range(len(shape)):
-            if shape[i][1]==19:
-                num = random.randrange(6)
-                shape = rand_shape(num)
-                color = shape_color(num)
+def is_empty(row):
+    for i in range(width):
+        if board[row][i] != White:
+            return False
+    return True
+def remove_filled():
+    for i in range(length-1, 0, -1):
+        while is_full(i):
+            for j in range(i, 0, -1):
+                for n in range(width):
+                    if (j==0):
+                        board[j][n] = White
+                    else:
+                        board[j][n] = board[j-1][n]
+        if is_empty(i):
+            break
 
-                # add shape to board
-                for i in range(len(shape)):
-                    board[shape[i][1]][shape[i][0] + 4] = color
-                # spawn shape at top of screen
-                print(board[0])
-                print(board[1])
-                for i in range(20):
-                    for k in range(10):
-                        pygame.draw.rect(screen, board[i][k], [k * 25, i * 25, 25, 25])
-
-        # ScoreBoard
-        pygame.draw.rect(screen, Black, [270, 50, 150, 200], 4)
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        Score_title = font.render("Score", True, Black)
-        screen.blit(Score_title, [280, 60])
-        score_display = font.render(str(score), True, Black)
-        screen.blit(score_display, [280, 80])
-        level_title = font.render("Level", True, Black)
-        screen.blit(level_title, [280, 120])
-        level_display = font.render(str(level), True, Black)
-        screen.blit(level_display, [280, 140])
-
-        #player.update()
-        #active_sprite_list.draw(screen)
-        #bottom_hit_list = pygame.sprite.spritecollide(player, bottom_walls, False)
-        #for i in bottom_hit_list:
-        #    if player.rect.y <= 526:
-
-        #        counter += 1
-        if counter == 5:
-            if timer_check >= 4:
-                timer_check -= 2
-                level += 1
-                counter = 0
-                timer = 0
-        #print(timer, timer_check)
-        for i in range(0, 500, 25):
-            for k in range(0, 250, 25):
-                pygame.draw.rect(screen, (200, 200, 200), [k, i, 25, 25], 1)
-        pygame.display.flip()
-        clock.tick(20)
-        timer += 1
+def process_event():
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key==pygame.K_LEFT:
+                if go_left():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_RIGHT:
+                if go_right():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_UP:
+                if rotate():
+                    check_final()
+                    paint()
+            elif event.key==pygame.K_SPACE:
+                if drop():
+                    check_final()
+                    paint()
+        elif event.type == EVENT_PAINT:
+            paint()
+        elif event.type == EVENT_TIMER:
+            if go_down():
+                check_final()
+                paint()
+        elif event.type == pygame.QUIT:
+            sys.exit()
 if __name__ == "__main__":
-    main()
+   main()
