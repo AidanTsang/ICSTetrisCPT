@@ -26,7 +26,6 @@ score = 0
 time = 550
 counter = 0
 
-EVENT_PAINT = 25
 EVENT_TIMER = 26
 
 def new_board():
@@ -107,7 +106,6 @@ def new_game():
     pygame.time.set_timer(EVENT_TIMER, time)
 
 def start_game():
-    
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
@@ -115,14 +113,46 @@ def start_game():
         elif event.type == pygame.QUIT:
             sys.exit()
 
+def menu():
+    screen.fill(White)
+    font = pygame.font.SysFont('arial', 50, True, False)
+    Tetris_title = font.render("Tetris", True, Blue)
+    screen.blit(Tetris_title, [170, 150])
+    font = pygame.font.SysFont('arial', 25, True, False)
+    Tetris_play = font.render("press enter to start the game", True, Black)
+    screen.blit(Tetris_play, [100, 200])
+    pygame.display.flip()
+
+def game_over():
+    game_over = False
+    for i, k in shape:
+        row = shape_row + 1 + i
+        col = shape_col + k
+        if board[row][col] != White and shape_row <= 0:
+            game_over = True
+    return game_over
+
+def game_end():
+    font = pygame.font.SysFont('arial', 25, True, False)
+    Tetris_replay = font.render("press enter to play again", True, Black)
+    screen.blit(Tetris_replay, [25, 200])
+    score_display = font.render(str(score), True, Black)
+    screen.blit(score_display, [150, 225])
+    Score_title = font.render("Score:", True, Black)
+    screen.blit(Score_title, [75, 225])
+    pygame.display.flip()
+
 def main():
     pygame.init()
     pygame.display.set_caption("ICSTetrisCPT")
+    menu()
     while True:
         if start_game():
             new_game()
-            while True:
+            while not game_over():
                 process_event()
+            else:
+                game_end()
 
 def new_shape():
     global shape, shape_color, shape_row, shape_col, shape_rotate
@@ -183,6 +213,7 @@ def check_final():
             counter = 0
             time -=50
             pygame.time.set_timer(EVENT_TIMER, time)
+
 def is_full(row):
     for i in range(width):
         if board[row][i] == White:
@@ -232,8 +263,6 @@ def process_event():
                 if drop():
                     check_final()
                     paint()
-        elif event.type == EVENT_PAINT:
-            paint()
         elif event.type == EVENT_TIMER:
             if go_down():
                 check_final()
