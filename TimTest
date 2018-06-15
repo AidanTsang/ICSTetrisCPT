@@ -25,6 +25,7 @@ level = 1
 score = 0
 time = 550
 counter = 0
+shape_counter = 0
 
 EVENT_TIMER = 26    #create timer event
 
@@ -99,9 +100,11 @@ def rotate():   #function to rotate shape
     return False
 
 def new_game(): #function to begin the game
-    global level, counter, time
+    global level, counter, time, shape_counter
     level = 1
     counter = 0
+    shape_counter = 0
+    time = 550
     new_shape()
     new_board()
     pygame.time.set_timer(EVENT_TIMER, time)
@@ -117,22 +120,29 @@ def start_game():   #function to begin game; click enter to begin game
 def menu(): #start game menu
     screen.fill(White)
     font = pygame.font.SysFont('arial', 50, True, False)
-    Tetris_title = font.render("Tetris", True, Blue)
-    screen.blit(Tetris_title, [170, 150])
+    Tetris_title = font.render("TETRIS", True, Blue)
+    screen.blit(Tetris_title, [150, 150])
     font = pygame.font.SysFont('arial', 25, True, False)
     Tetris_play = font.render("press ENTER to start the game", True, Black)
     screen.blit(Tetris_play, [75, 200])
+    Controls_spacebar = font.render("SPACEBAR = hard drop", True, Black)
+    screen.blit(Controls_spacebar, [75, 225])
+    Controls_KEYUP = font.render("UP ARROW = rotate", True, Black)
+    screen.blit(Controls_KEYUP, [75, 250])
+    Controls_KEYLEFT_RIGHT = font.render("LEFT/RIGHT ARROW = move left/right", True, Black)
+    screen.blit(Controls_KEYLEFT_RIGHT, [75, 275])
+    Controls_KEYDOWN = font.render("DOWN ARROW = soft drop", True, Black)
+    screen.blit(Controls_KEYDOWN, [75, 300])
     pygame.display.flip()
 
 def game_over():    #function to check if game is over; cannot drop shape
+    global time
     game_over = False
     for i, k in shape:
         row = shape_row + 1 + i
         col = shape_col + k
         if board[row][col] != White and shape_row <= 0:
             game_over = True
-            time = 550
-            pygame.time.set_timer(EVENT_TIMER, time)
     return game_over
 
 def game_end(): #game over menu
@@ -149,10 +159,14 @@ def game_end(): #game over menu
     pygame.display.flip()
 
 def new_shape():    #obtain new shape
-    global shape, shape_color, shape_row, shape_col, shape_rotate
+    global shape, shape_color, shape_row, shape_col, shape_rotate, shape_counter
     shape_row = 0
     shape_col = width//2-1
-    num = random.randrange(7)   #get num with random module to obtain random shape
+    if shape_counter<3:
+        num = random.randrange(2,7)
+        shape_counter+=1
+    else:
+        num = random.randrange(7)   #get num with random module to obtain random shape
     shape = shapes[num]
     shape_color = colors[num]
     shape_rotate = spins[num]
