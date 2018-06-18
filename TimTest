@@ -100,8 +100,9 @@ def rotate():   #function to rotate shape
     return False
 
 def new_game(): #function to begin the game
-    global level, counter, time, shape_counter
+    global level, counter, time, shape_counter, score
     level = 1
+    score = 0
     counter = 0
     shape_counter = 0
     time = 550
@@ -127,12 +128,14 @@ def menu(): #start game menu
     screen.blit(Tetris_play, [75, 200])
     Controls_spacebar = font.render("SPACEBAR = hard drop", True, Black)
     screen.blit(Controls_spacebar, [75, 225])
-    Controls_KEYUP = font.render("UP ARROW = rotate", True, Black)
+    Controls_KEYUP = font.render("UP ARROW = rotate clockwise", True, Black)
     screen.blit(Controls_KEYUP, [75, 250])
-    Controls_KEYLEFT_RIGHT = font.render("LEFT/RIGHT ARROW = move left/right", True, Black)
-    screen.blit(Controls_KEYLEFT_RIGHT, [75, 275])
+    Controls_KEYLEFT = font.render("LEFT ARROW = move left", True, Black)
+    screen.blit(Controls_KEYLEFT, [75, 275])
+    Controls_KEYRIGHT = font.render("RIGHT ARROW = move right", True, Black)
+    screen.blit(Controls_KEYRIGHT, [75, 300])
     Controls_KEYDOWN = font.render("DOWN ARROW = soft drop", True, Black)
-    screen.blit(Controls_KEYDOWN, [75, 300])
+    screen.blit(Controls_KEYDOWN, [75, 325])
     pygame.display.flip()
 
 def game_over():    #function to check if game is over; cannot drop shape
@@ -150,12 +153,16 @@ def game_end(): #game over menu
     GAMEOVER = font.render("GAME OVER", True, Black)
     screen.blit(GAMEOVER, [10, 150])
     font = pygame.font.SysFont('arial', 25, True, False)
-    Tetris_replay = font.render("press enter to play again", True, Black)
+    Tetris_replay = font.render("press ENTER to play again", True, Black)
     screen.blit(Tetris_replay, [10, 200])
     score_display = font.render(str(score), True, Black)
     screen.blit(score_display, [150, 225])
     Score_title = font.render("Score:", True, Black)
     screen.blit(Score_title, [75, 225])
+    Level_title = font.render("Level:", True, Black)
+    screen.blit(Level_title, [75, 250])
+    Level_display = font.render(str(level), True, Black)
+    screen.blit(Level_display, [150, 250])
     pygame.display.flip()
 
 def new_shape():    #obtain new shape
